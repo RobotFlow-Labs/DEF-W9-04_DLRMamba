@@ -1,0 +1,72 @@
+schema_version: "1.0"
+
+module:
+  name: dlrmamba
+  version: "0.1.0"
+  display_name: "DLRMamba"
+  description: "Low-rank SS2D + structure-aware distillation for edge RGB-IR multispectral object detection"
+  category: perception.multispectral_detection
+  license: MIT
+
+capabilities:
+  provides:
+    - type: object_detection
+      subtype: rgb_ir_multispectral
+    - type: model_compression
+      subtype: low_rank_ss2d
+    - type: distillation
+      subtype: structure_aware
+
+interface:
+  inputs:
+    - name: rgb_image
+      ros2_type: sensor_msgs/msg/Image
+      encoding: [rgb8, bgr8]
+      min_hz: 1
+    - name: ir_image
+      ros2_type: sensor_msgs/msg/Image
+      encoding: [mono8, rgb8]
+      min_hz: 1
+  outputs:
+    - name: detections
+      ros2_type: vision_msgs/msg/Detection2DArray
+      typical_hz: 5
+  parameters:
+    - name: conf_threshold
+      type: float
+      required: false
+      default: 0.25
+    - name: max_detections
+      type: int
+      required: false
+      default: 300
+
+hardware:
+  platforms:
+    - name: apple_silicon
+      backends: [cpu, mps]
+    - name: linux_x86
+      backends: [cuda, cpu]
+
+performance:
+  profiles:
+    - platform: raspberry_pi_5
+      backend: cpu
+      fps: 2.3
+      latency_p50_ms: 434.8
+      description: "Paper-reported low-rank distilled model"
+    - platform: nvidia_rtx_4090
+      backend: cuda
+      fps: 29.0
+      latency_p50_ms: 34.5
+      description: "Paper-reported"
+
+safety:
+  failure_mode: best_effort
+  timeout_ms: 30000
+  health_topic: /anima/dlrmamba/health
+
+container:
+  image: ghcr.io/aiflowlabs/anima-dlrmamba:0.1.0
+  port: 8036
+  health_endpoint: /health

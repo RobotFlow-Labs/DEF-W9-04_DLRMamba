@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  dlrmamba:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    env_file:
+      - .env.serve
+    ports:
+      - "8036:8036"
+    command: ["uvicorn", "anima_dlrmamba.serve:app", "--host", "0.0.0.0", "--port", "8036"]
