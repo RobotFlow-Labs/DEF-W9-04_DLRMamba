@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DLRMAMBA // HERO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rf-accent: #FF3B00;
+      --rf-accent-glow: rgba(255, 59, 0, 0.3);
+      --rf-accent-dim: rgba(255, 59, 0, 0.15);
+      --rf-bg: #050505;
+      --rf-bg-panel: #1A1A1A;
+      --rf-border: #333333;
+      --rf-text: #ffffff;
+      --rf-text-dim: #999999;
+      --rf-success: #00FF88;
+      --rf-restricted: #9B5EFF;
+      --rf-font-display: 'Oswald', sans-serif;
+      --rf-font-mono: 'JetBrains Mono', monospace;
+      --rf-font-tech: 'Chakra Petch', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--rf-font-mono);
+      background: var(--rf-bg);
+      color: var(--rf-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 2px,
+        rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+      );
+    }
+
+    .hero-wrap {
+      position: relative;
+      width: 1280px;
+      height: 640px;
+      background:
+        linear-gradient(rgba(255,59,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,59,0,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      border: 1px solid var(--rf-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero-wrap::before,
+    .hero-wrap::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: var(--rf-restricted);
+      border-style: solid;
+    }
+    .hero-wrap::before {
+      top: 12px; left: 12px;
+      border-width: 2px 0 0 2px;
+    }
+    .hero-wrap::after {
+      bottom: 12px; right: 12px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .corner-tr, .corner-bl {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: var(--rf-restricted);
+      border-style: solid;
+    }
+    .corner-tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+    .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+
+    .glow-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--rf-restricted), var(--rf-accent), var(--rf-restricted), transparent);
+      animation: scan 3s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .hero-tag {
+      font-family: var(--rf-font-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--rf-restricted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding: 4px 16px;
+      border: 1px solid var(--rf-restricted);
+      background: rgba(155,94,255,0.08);
+    }
+
+    .module-code {
+      font-family: var(--rf-font-mono);
+      font-size: 13px;
+      color: var(--rf-text-dim);
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-family: var(--rf-font-display);
+      font-size: 68px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.0;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .hero-title .accent { color: var(--rf-accent); }
+    .hero-title .purple { color: var(--rf-restricted); }
+
+    .hero-subtitle {
+      font-family: var(--rf-font-tech);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--rf-text-dim);
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .hero-desc {
+      font-size: 13px;
+      color: var(--rf-text-dim);
+      max-width: 720px;
+      text-align: center;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 28px;
+    }
+    .stat {
+      text-align: center;
+      padding: 12px 24px;
+      border: 1px solid var(--rf-border);
+      background: var(--rf-bg-panel);
+    }
+    .stat-value {
+      font-family: var(--rf-font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--rf-accent);
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--rf-text-dim);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border: 1px solid var(--rf-border);
+      color: var(--rf-text-dim);
+      text-transform: uppercase;
+    }
+    .tag.active { border-color: var(--rf-success); color: var(--rf-success); }
+    .tag.restricted { border-color: var(--rf-restricted); color: var(--rf-restricted); }
+
+    .status-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 36px;
+      background: var(--rf-bg-panel);
+      border-top: 1px solid var(--rf-border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 24px;
+      font-size: 11px;
+      color: var(--rf-text-dim);
+      letter-spacing: 1px;
+    }
+    .status-bar .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .dot.green { background: var(--rf-success); box-shadow: 0 0 8px var(--rf-success); }
+    .dot.orange { background: #FFB800; box-shadow: 0 0 8px #FFB800; }
+    .dot.purple { background: var(--rf-restricted); box-shadow: 0 0 8px var(--rf-restricted); }
+
+    .credits {
+      position: absolute;
+      top: 16px;
+      right: 60px;
+      font-size: 10px;
+      color: var(--rf-text-dim);
+      letter-spacing: 1px;
+      text-align: right;
+      line-height: 1.8;
+    }
+    .credits a { color: var(--rf-restricted); text-decoration: none; }
+
+    .pillar-tag {
+      position: absolute;
+      top: 16px;
+      left: 60px;
+      font-size: 10px;
+      color: var(--rf-restricted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .ir-overlay {
+      position: absolute;
+      top: 80px;
+      right: 40px;
+      width: 120px;
+      height: 120px;
+      border: 1px solid rgba(255,59,0,0.2);
+      background: radial-gradient(circle, rgba(255,59,0,0.08) 0%, transparent 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--rf-font-mono);
+      font-size: 9px;
+      color: var(--rf-accent);
+      letter-spacing: 2px;
+    }
+    .ir-overlay .crosshair {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .ir-overlay .crosshair::before,
+    .ir-overlay .crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,59,0,0.15);
+    }
+    .ir-overlay .crosshair::before {
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+    }
+    .ir-overlay .crosshair::after {
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-wrap">
+    <div class="glow-line"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+
+    <div class="pillar-tag">&#128274; ANIMA SUITE // WAVE 9 &mdash; DEFENSE</div>
+
+    <div class="credits">
+      SYSTEM: <a href="https://robotflow-labs.github.io">ANIMA</a><br>
+      ORG: <a href="https://github.com/RobotFlow-Labs">ROBOTFLOW LABS</a>
+    </div>
+
+    <div class="ir-overlay">
+      <div class="crosshair"></div>
+      RGB+IR FUSION
+    </div>
+
+    <div class="hero-tag">&#128274; MODULE W9-04</div>
+    <div class="module-code">DLRMAMBA</div>
+    <div class="hero-title">
+      <span class="accent">LOW-RANK</span> MAMBA
+    </div>
+    <div class="hero-subtitle">EDGE MULTISPECTRAL FUSION OBJECT DETECTION &mdash; ZERO COMPROMISE</div>
+
+    <p class="hero-desc">
+      Structure-aware distillation compresses full-rank state-space models into edge-deployable<br>
+      detectors. RGB-IR pixel fusion with linear-complexity scanning. Runs on Raspberry Pi 5.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-value">50%</div>
+        <div class="stat-label">PARAM REDUCTION</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">3x</div>
+        <div class="stat-label">EDGE SPEEDUP</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">5</div>
+        <div class="stat-label">BENCHMARKS</div>
+      </div>
+    </div>
+
+    <div class="tag-row">
+      <span class="tag restricted">ANIMA</span>
+      <span class="tag active">MAMBA SS2D</span>
+      <span class="tag active">RGB-IR FUSION</span>
+      <span class="tag">LOW-RANK SVD</span>
+      <span class="tag">DISTILLATION</span>
+      <span class="tag active">EDGE DEPLOY</span>
+    </div>
+
+    <div class="status-bar">
+      <span><span class="dot green"></span>FUSION: OPERATIONAL</span>
+      <span><span class="dot green"></span>LOW-RANK SS2D: NATIVE</span>
+      <span><span class="dot green"></span>DISTILLATION: ACTIVE</span>
+      <span><span class="dot purple"></span>DEFENSE: RESTRICTED</span>
+      <span style="margin-left:auto; color:#666;">Zhang et al. &mdash; arXiv:2603.06920</span>
+    </div>
+  </div>
+</body>
+</html>
