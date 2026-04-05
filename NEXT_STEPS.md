@@ -1,27 +1,41 @@
 # NEXT_STEPS — DLRMamba
+> Last updated: 2026-04-05
+> MVP Readiness: 75%
 
-## Session Log
-- [20:58] Initialized `/anima-autopilot` flow for 04_DLRMamba.
-- [21:03] Parsed paper 2603.06920 + arXiv source; confirmed no official author code repo in v1 metadata.
-- [21:12] Generated full planning assets: `ASSETS.md`, `PRD.md`, `prds/`, `tasks/`.
-- [21:24] Implemented essential local codebase (model, losses, train/infer/serve, configs, tests).
-- [21:30] Validation pass complete: `pytest` green, debug train smoke run passes (`--max-steps 3`), infer CLI + service health verified.
+## Done
+- [x] PRD-01: Foundation & Config — dataclass config with checkpoint/scheduler/early-stop sections
+- [x] PRD-02: Core Model — Low-Rank SS2D, Pixel Fusion, Decoupled Detection Head
+- [x] PRD-03: Inference Pipeline — CLI + batch decode
+- [x] PRD-04: Evaluation Harness — mAP50 eval, proper focal+smooth_l1 detection loss
+- [x] PRD-05: API & Docker Serving — FastAPI + Dockerfile.serve + docker-compose + anima_module.yaml
+- [x] PRD-06: ROS2 Integration — ROS2 node skeleton (Detection2DArray publisher)
+- [x] PRD-07: Export Pipeline — pth/safetensors/ONNX/TRT FP16/FP32 export script
+- [x] Production training loop — checkpointing, cosine warmup scheduler, early stopping, bf16 AMP, gradient clipping, resume support
+- [x] LLVIP dataset downloaded + prepared — 10823 train, 1202 val, 3463 test (symlinks)
+- [x] All 8 tests pass, ruff lint clean
 
-## What Is Done
-- Core architecture scaffold completed for paper-aligned implementation.
-- Distillation objectives implemented (SVD/state/feature).
-- Decoupled detector and multi-scale outputs implemented.
-- Local unit/smoke tests added.
+## In Progress
+- [ ] GPU training on LLVIP (pending GPU allocation)
 
-## What Is Next
-1. Provision datasets (VEDAI/FLIR/LLVIP/M3FD/DroneVehicle) and teacher checkpoint.
-2. Implement full benchmark evaluators and report generator (PRD-04).
-3. Add ROS2 node + launch integration (PRD-06).
-4. Run CUDA optimization and long training on `datai_srv7_development`.
-5. Export ONNX/TRT fp16/fp32 and finalize production package (PRD-07).
+## TODO
+- [ ] Ask user for GPU allocation, run /gpu-batch-finder
+- [ ] Launch full 300-epoch training with nohup+disown
+- [ ] Monitor GPU VRAM (target 60-80% of 23GB)
+- [ ] Evaluate best checkpoint on test set (mAP50)
+- [ ] Export best model: pth → safetensors → ONNX → TRT FP16 → TRT FP32
+- [ ] Push to HuggingFace: ilessio-aiflowlab/dlrmamba
+- [ ] Generate TRAINING_REPORT.md
+- [ ] Git push to develop
 
-## Blockers
-- Missing datasets and teacher checkpoint prevent full training/evaluation.
+## Blocking
+- Need GPU allocation from user before training can start
+- venv is on /mnt/train-data/venvs/dlrmamba (forge-data disk is 100% full)
 
-## Resume Pointer
-Resume from **PRD-04 (Evaluation Harness)** after assets are available.
+## Downloads Needed
+- None — LLVIP dataset is ready at /mnt/train-data/datasets/llvip/
+
+## Notes
+- LLVIP is pedestrian detection (1 class) — paper config uses num_classes=1
+- Paper reports 97.5 mAP50 on LLVIP — our target >=96.5
+- Paper uses SGD with lr=0.01, momentum=0.937, 300 epochs, batch_size=8
+- Student model: ~0.5M params (debug), ~8.5M params (paper config with embed_dim=64, num_blocks=4)
