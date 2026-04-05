@@ -1,5 +1,5 @@
 [model]
-num_classes = 8
+num_classes = 1
 in_channels = 3
 fusion_channels = 32
 embed_dim = 64
@@ -17,12 +17,35 @@ lambda_task = 1.0
 lambda_svd = 0.5
 lambda_state = 0.1
 lambda_feat = 1.5
+precision = "bf16"
+gradient_clip = 1.0
+warmup_ratio = 0.05
+min_lr = 1e-6
+seed = 42
+log_interval = 10
+val_interval = 1
 
 [data]
 image_size = 640
-num_workers = 8
-train_root = "/mnt/forge-data/datasets/vedai/train"
-val_root = "/mnt/forge-data/datasets/vedai/val"
+num_workers = 4
+pin_memory = true
+train_root = "/mnt/train-data/datasets/llvip/train"
+val_root = "/mnt/train-data/datasets/llvip/val"
+test_root = "/mnt/train-data/datasets/llvip/test"
+
+[checkpoint]
+output_dir = "/mnt/artifacts-datai/checkpoints/dlrmamba"
+log_dir = "/mnt/artifacts-datai/logs/dlrmamba"
+tensorboard_dir = "/mnt/artifacts-datai/tensorboard/dlrmamba"
+save_every_n_epochs = 10
+keep_top_k = 2
+metric = "val_loss"
+mode = "min"
+
+[early_stopping]
+enabled = true
+patience = 20
+min_delta = 0.0001
 
 [infer]
 conf_threshold = 0.25

@@ -17,12 +17,34 @@ lambda_task = 1.0
 lambda_svd = 0.5
 lambda_state = 0.1
 lambda_feat = 1.5
+precision = "fp32"
+gradient_clip = 1.0
+warmup_ratio = 0.05
+min_lr = 1e-6
+seed = 42
+log_interval = 2
+val_interval = 1
 
 [data]
 image_size = 224
 num_workers = 0
+pin_memory = false
 train_root = ""
 val_root = ""
+
+[checkpoint]
+output_dir = "/tmp/dlrmamba_debug_ckpt"
+log_dir = "/tmp/dlrmamba_debug_logs"
+tensorboard_dir = "/tmp/dlrmamba_debug_tb"
+save_every_n_epochs = 1
+keep_top_k = 1
+metric = "val_loss"
+mode = "min"
+
+[early_stopping]
+enabled = false
+patience = 5
+min_delta = 0.001
 
 [infer]
 conf_threshold = 0.25

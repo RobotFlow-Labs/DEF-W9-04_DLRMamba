@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import tomllib
 
@@ -27,14 +27,42 @@ class TrainConfig:
     lambda_svd: float = 0.5
     lambda_state: float = 0.1
     lambda_feat: float = 1.5
+    precision: str = "bf16"
+    gradient_clip: float = 1.0
+    warmup_ratio: float = 0.05
+    min_lr: float = 1e-6
+    seed: int = 42
+    log_interval: int = 10
+    val_interval: int = 1
+    resume: str = ""
 
 
 @dataclass(slots=True)
 class DataConfig:
     image_size: int = 640
-    num_workers: int = 2
+    num_workers: int = 4
+    pin_memory: bool = True
     train_root: str = ""
     val_root: str = ""
+    test_root: str = ""
+
+
+@dataclass(slots=True)
+class CheckpointConfig:
+    output_dir: str = "/mnt/artifacts-datai/checkpoints/dlrmamba"
+    log_dir: str = "/mnt/artifacts-datai/logs/dlrmamba"
+    tensorboard_dir: str = "/mnt/artifacts-datai/tensorboard/dlrmamba"
+    save_every_n_epochs: int = 10
+    keep_top_k: int = 2
+    metric: str = "val_loss"
+    mode: str = "min"
+
+
+@dataclass(slots=True)
+class EarlyStoppingConfig:
+    enabled: bool = True
+    patience: int = 20
+    min_delta: float = 1e-4
 
 
 @dataclass(slots=True)
@@ -45,10 +73,12 @@ class InferConfig:
 
 @dataclass(slots=True)
 class AppConfig:
-    model: ModelConfig
-    train: TrainConfig
-    data: DataConfig
-    infer: InferConfig
+    model: ModelConfig = field(default_factory=ModelConfig)
+    train: TrainConfig = field(default_factory=TrainConfig)
+    data: DataConfig = field(default_factory=DataConfig)
+    checkpoint: CheckpointConfig = field(default_factory=CheckpointConfig)
+    early_stopping: EarlyStoppingConfig = field(default_factory=EarlyStoppingConfig)
+    infer: InferConfig = field(default_factory=InferConfig)
 
 
 def _load_dataclass(dc_cls, payload: dict) -> object:
@@ -65,5 +95,7 @@ def load_config(path: str | Path) -> AppConfig:
         model=_load_dataclass(ModelConfig, payload.get("model", {})),
         train=_load_dataclass(TrainConfig, payload.get("train", {})),
         data=_load_dataclass(DataConfig, payload.get("data", {})),
+        checkpoint=_load_dataclass(CheckpointConfig, payload.get("checkpoint", {})),
+        early_stopping=_load_dataclass(EarlyStoppingConfig, payload.get("early_stopping", {})),
         infer=_load_dataclass(InferConfig, payload.get("infer", {})),
     )
