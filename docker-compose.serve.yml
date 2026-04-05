@@ -1,11 +1,67 @@
-version: "3.9"
 services:
-  dlrmamba:
+  dlrmamba-serve:
     build:
       context: .
       dockerfile: Dockerfile.serve
     env_file:
       - .env.serve
     ports:
-      - "8036:8036"
-    command: ["uvicorn", "anima_dlrmamba.serve:app", "--host", "0.0.0.0", "--port", "8036"]
+      - "${ANIMA_SERVE_PORT:-8036}:8036"
+    volumes:
+      - weights:/data/weights
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    network_mode: host
+    profiles: [serve]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8036/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  dlrmamba-ros2:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    env_file:
+      - .env.serve
+    environment:
+      - ROS_DOMAIN_ID=0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - weights:/data/weights
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    network_mode: host
+    profiles: [ros2]
+    command: ["python", "-m", "anima_dlrmamba.ros2_node"]
+
+  dlrmamba-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    env_file:
+      - .env.serve
+    ports:
+      - "${ANIMA_SERVE_PORT:-8036}:8036"
+    profiles: [api]
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    command: ["python", "-m", "pytest", "tests/", "-v"]
+    profiles: [test]
+
+volumes:
+  weights:
