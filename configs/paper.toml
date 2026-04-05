@@ -11,7 +11,7 @@ state_dim = 64
 lr = 0.01
 momentum = 0.937
 weight_decay = 0.0005
-batch_size = 8
+batch_size = 24
 epochs = 300
 lambda_task = 1.0
 lambda_svd = 0.5
@@ -26,7 +26,7 @@ log_interval = 10
 val_interval = 1
 
 [data]
-image_size = 640
+image_size = 320
 num_workers = 4
 pin_memory = true
 train_root = "/mnt/train-data/datasets/llvip/train"

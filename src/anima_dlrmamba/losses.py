@@ -21,7 +21,7 @@ class StructureAwareDistillationLoss(nn.Module):
 
     @staticmethod
     def svd_alignment_loss(u_s: torch.Tensor, v_s: torch.Tensor, a_t: torch.Tensor) -> torch.Tensor:
-        u_t, s_t, v_t = torch.linalg.svd(a_t, full_matrices=False)
+        u_t, s_t, v_t = torch.linalg.svd(a_t.float(), full_matrices=False)
         r = u_s.shape[1]
         s_root = torch.sqrt(s_t[:r].clamp(min=1e-8))
         u_ref = u_t[:, :r] * s_root.unsqueeze(0)
