@@ -1,41 +1,44 @@
 # NEXT_STEPS — DLRMamba
 > Last updated: 2026-04-05
-> MVP Readiness: 75%
+> MVP Readiness: 85%
 
 ## Done
-- [x] PRD-01: Foundation & Config — dataclass config with checkpoint/scheduler/early-stop sections
-- [x] PRD-02: Core Model — Low-Rank SS2D, Pixel Fusion, Decoupled Detection Head
-- [x] PRD-03: Inference Pipeline — CLI + batch decode
-- [x] PRD-04: Evaluation Harness — mAP50 eval, proper focal+smooth_l1 detection loss
-- [x] PRD-05: API & Docker Serving — FastAPI + Dockerfile.serve + docker-compose + anima_module.yaml
-- [x] PRD-06: ROS2 Integration — ROS2 node skeleton (Detection2DArray publisher)
-- [x] PRD-07: Export Pipeline — pth/safetensors/ONNX/TRT FP16/FP32 export script
-- [x] Production training loop — checkpointing, cosine warmup scheduler, early stopping, bf16 AMP, gradient clipping, resume support
-- [x] LLVIP dataset downloaded + prepared — 10823 train, 1202 val, 3463 test (symlinks)
-- [x] All 8 tests pass, ruff lint clean
+- [x] PRD-01 through PRD-07: ALL COMPLETE
+- [x] Production training loop: checkpointing, cosine warmup, early stopping, bf16 AMP, resume
+- [x] LLVIP dataset: 10823 train, 1202 val, 3463 test
+- [x] Parallel block-scan SS2D (64-step blocks + conv1d cross-block mixing)
+- [x] Fixed bf16 SVD (cast to float32)
+- [x] mAP50 evaluation harness
+- [x] Export pipeline: pth → safetensors → ONNX → TRT FP16/FP32
+- [x] Docker serving + ROS2 node
+- [x] 8/8 tests pass, ruff lint clean
+- [x] 7 git commits
 
 ## In Progress
-- [ ] GPU training on LLVIP (pending GPU allocation)
+- [x] Training on GPU 6 — bs=24, 320x320, 300 epochs, LLVIP
+  - PID: 26570
+  - Log: /mnt/artifacts-datai/logs/dlrmamba/train_20260405_0735.log
+  - Epoch 1/300: train_loss=2.03, val_loss=0.39
+  - VRAM: 10.3GB/23GB (45%), 100% GPU util
+  - ETA: ~50 hours (300 epochs × 10 min/epoch)
+  - Checkpoint: /mnt/artifacts-datai/checkpoints/dlrmamba/best.pth
 
-## TODO
-- [ ] Ask user for GPU allocation, run /gpu-batch-finder
-- [ ] Launch full 300-epoch training with nohup+disown
-- [ ] Monitor GPU VRAM (target 60-80% of 23GB)
-- [ ] Evaluate best checkpoint on test set (mAP50)
+## TODO (after training completes)
 - [ ] Export best model: pth → safetensors → ONNX → TRT FP16 → TRT FP32
 - [ ] Push to HuggingFace: ilessio-aiflowlab/dlrmamba
+- [ ] Git push to origin main
 - [ ] Generate TRAINING_REPORT.md
-- [ ] Git push to develop
+- [ ] Evaluate on test set (mAP50)
 
-## Blocking
-- Need GPU allocation from user before training can start
-- venv is on /mnt/train-data/venvs/dlrmamba (forge-data disk is 100% full)
-
-## Downloads Needed
-- None — LLVIP dataset is ready at /mnt/train-data/datasets/llvip/
+## Standing Order
+User is sleeping 6h. When training completes:
+1. Run full export pipeline
+2. Push to git origin main
+3. Push to HuggingFace
+4. Save CUDA kernels to shared_infra
 
 ## Notes
-- LLVIP is pedestrian detection (1 class) — paper config uses num_classes=1
-- Paper reports 97.5 mAP50 on LLVIP — our target >=96.5
-- Paper uses SGD with lr=0.01, momentum=0.937, 300 epochs, batch_size=8
-- Student model: ~0.5M params (debug), ~8.5M params (paper config with embed_dim=64, num_blocks=4)
+- venv: /mnt/train-data/venvs/dlrmamba (forge-data disk full)
+- LLVIP = pedestrian detection, 1 class, paper target 97.5 mAP50
+- Student: 2.03M params, Teacher: 2.54M params
+- Block-scan: 64-step blocks with depthwise conv1d mixing

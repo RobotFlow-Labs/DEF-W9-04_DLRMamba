@@ -39,7 +39,7 @@ def export_safetensors(model: DLRMambaDetector, output_path: Path) -> Path:
 
 
 def export_onnx(
-    model: DLRMambaDetector, output_path: Path, image_size: int = 640, opset: int = 17
+    model: DLRMambaDetector, output_path: Path, image_size: int = 640, opset: int = 18
 ) -> Path:
     dst = output_path / "model.onnx"
     dummy = torch.randn(1, 2, 3, image_size, image_size)
@@ -63,9 +63,8 @@ def export_onnx(
         str(dst),
         input_names=["input"],
         output_names=["cls_logits", "box_deltas"],
-        dynamic_axes={"input": {0: "batch"}, "cls_logits": {0: "batch"}, "box_deltas": {0: "batch"}},
         opset_version=opset,
-        do_constant_folding=True,
+        dynamo=False,
     )
     print(f"[EXPORT] ONNX → {dst} ({dst.stat().st_size / 1e6:.1f}MB)")
     return dst
