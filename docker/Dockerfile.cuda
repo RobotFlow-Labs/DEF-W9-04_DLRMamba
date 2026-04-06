@@ -1,0 +1,25 @@
+FROM nvidia/cuda:12.8.0-runtime-ubuntu22.04
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 python3.11-venv python3-pip curl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN python3.11 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install --no-cache-dir uv && \
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+COPY pyproject.toml README.md /app/
+COPY src /app/src
+COPY configs /app/configs
+
+RUN uv pip install .
+
+ENV ANIMA_MODULE_NAME=dlrmamba
+ENV ANIMA_DEVICE=cuda
+
+ENTRYPOINT ["python", "-m", "anima_dlrmamba.train"]
+CMD ["--config", "configs/paper.toml"]

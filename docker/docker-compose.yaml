@@ -1,0 +1,25 @@
+services:
+  dlrmamba-cuda:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cuda
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - /mnt/artifacts-datai/checkpoints/dlrmamba:/app/checkpoints
+      - /mnt/artifacts-datai/logs/dlrmamba:/app/logs
+    profiles: [cuda]
+
+  dlrmamba-mlx:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.mlx
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    profiles: [mlx]

@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir uv
+
+COPY pyproject.toml README.md /app/
+COPY src /app/src
+COPY configs /app/configs
+
+RUN uv pip install --system . && \
+    uv pip install --system mlx mlx-nn
+
+ENV ANIMA_MODULE_NAME=dlrmamba
+ENV ANIMA_DEVICE=mps
+
+ENTRYPOINT ["python", "-m", "anima_dlrmamba.train"]
+CMD ["--config", "configs/paper.toml"]
